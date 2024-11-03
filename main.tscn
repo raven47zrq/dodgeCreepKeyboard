@@ -1,0 +1,55 @@
+[gd_scene load_steps=7 format=3 uid="uid://dbbxkkmcek4ab"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_7lmri"]
+[ext_resource type="PackedScene" uid="uid://dw6xpodlckwyf" path="res://player.tscn" id="1_goteo"]
+[ext_resource type="PackedScene" uid="uid://d10am3puyplyh" path="res://mob.tscn" id="2_c8h24"]
+[ext_resource type="PackedScene" uid="uid://b6h612ookrk1l" path="res://canvas_layer.tscn" id="3_47ws6"]
+
+[sub_resource type="Curve2D" id="Curve2D_phl6w"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 480, 720, 0, 0, 0, 0, 0, 720, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oqyh8"]
+size = Vector2(477, 721)
+
+[node name="Main" type="Node"]
+script = ExtResource("1_7lmri")
+mob_scene = ExtResource("2_c8h24")
+
+[node name="Player" parent="." instance=ExtResource("1_goteo")]
+
+[node name="MobTimer" type="Timer" parent="."]
+wait_time = 0.5
+
+[node name="ScoreTimer" type="Timer" parent="."]
+
+[node name="StartTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[node name="StartPosition" type="Marker2D" parent="."]
+position = Vector2(240, 450)
+
+[node name="CanvasLayer" parent="." instance=ExtResource("3_47ws6")]
+
+[node name="MobPath" type="Path2D" parent="."]
+curve = SubResource("Curve2D_phl6w")
+
+[node name="MobSpawnLocation" type="PathFollow2D" parent="MobPath"]
+
+[node name="Area2D" type="Area2D" parent="."]
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(241.5, 359.5)
+shape = SubResource("RectangleShape2D_oqyh8")
+
+[connection signal="hit" from="Player" to="." method="game_over"]
+[connection signal="timeout" from="MobTimer" to="." method="_on_mob_timer_timeout"]
+[connection signal="timeout" from="ScoreTimer" to="." method="_on_score_timer_timeout"]
+[connection signal="timeout" from="StartTimer" to="." method="_on_start_timer_timeout"]
+[connection signal="start_game" from="CanvasLayer" to="." method="new_game"]
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
